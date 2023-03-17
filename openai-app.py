@@ -5,7 +5,7 @@ from dash import html
 from dash.dependencies import Input, Output, State
 
 # Set up OpenAI API credentials
-openai.api_key = "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"
+openai.api_key = "###"
 
 # create dash app
 app = dash.Dash(__name__)
