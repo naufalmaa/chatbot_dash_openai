@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Ubuntu:wght@700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #ffffff;
+    color: #112D4E;
+}
+
+.input-text {
+    width: 30%;
+}
+
+.icon-button-1 {
+    position: absolute;
+    left: 31%; 
+    top: 3%;
+}
+
+.icon-button-2 {
+    position: absolute;
+    left: 31%;
+    top: 8%;
+}
+
+.output-text {
+    width: 30%;
+}

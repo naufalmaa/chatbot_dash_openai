@@ -1,25 +1,39 @@
 import openai
 import dash
+from dash import Dash
 from dash import dcc
 from dash import html
-from dash.dependencies import Input, Output, State
+from dash import Input, Output, State, ctx
+import dash_mantine_components as dmc
+# from dash.dependencies import Input, Output, State
 
 # Set up OpenAI API credentials
 openai.api_key = "###"
 
 # create dash app
-app = dash.Dash(__name__)
+app = Dash(__name__, meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 
 # define the app layout in the section below
-app.layout = html.Div([
-    html.Div(id='message-container'),
-    dcc.Input(
-        id='user-input',
-        type='text',
-        placeholder='Type your message here...',
-        autoComplete='off',
-    ),
-    html.Button('Send', id='submit-button', n_clicks=0),
+app.layout = html.Section([
+    html.Div(id='input-container',
+             children=[
+                        dmc.Textarea(
+                            label="What are you asking for?",
+                            id='input-box',
+                            className='input-text',
+                            placeholder='Type your message here...',
+                            autosize=True,
+                            minRows=3,
+                            maxRows=4
+                        ),
+                        # dmc.Loader(color="blue", size="md", id='loader', variant="dots"),
+                        dmc.Button('Enter', variant="filled", id='submit-button', className ='icon-button-1', color='indigo', n_clicks=0),
+                        dmc.Button('Reset', variant="filled", id='reset-button', className ='icon-button-2', color='red', n_clicks=0),
+                        ]
+            ),
+    html.Div(id='output-container', className='output-text')
 ])
 
 # set history of messages
@@ -56,27 +70,117 @@ def chatbot(user_input):
     
     return response
 
-# define the app callback
+# original code
+# define the app callback to show the messages
+# @app.callback(
+#     Output('output-container', 'children'),
+#     Input('submit-button', 'n_clicks'),
+#     State('input-box', 'value'),
+# )
+# def update_output(n_clicks, value):
+#     if n_clicks > 0:
+#         # call the chatbot function to get the response
+#         response = chatbot(value)
+        
+#         # create a list of message components for each response tuple
+#         message_components = [html.Div([
+#             html.Br(),
+#             html.Br(), 
+#             html.P("You:"),
+#             html.Div(msg[0], className='user-message'),
+#             html.Br(),
+#             html.Br(),
+#             html.P("Assistant:"),
+#             html.Div(msg[1], className='assistant-message'),
+#             html.Br(),
+#             html.Br()
+#         ]) for msg in response]
+        
+#         # return the message components
+#         return message_components
+#     else:
+#         return []
+
+# try1
 @app.callback(
-    Output('message-container', 'children'),
-    [Input('submit-button', 'n_clicks')],
-    [State('user-input', 'value')],
+    Output('output-container', 'children'),
+    Input('submit-button', 'n_clicks'),
+    Input('reset-button', 'n_clicks'),
+    State('input-box', 'value'),
 )
-def update_output(n_clicks, value):
-    if n_clicks > 0:
+def update_output(b1,b2, value):
+    button_click = ctx.triggered_id
+    if button_click == 'submit-button':
         # call the chatbot function to get the response
         response = chatbot(value)
         
         # create a list of message components for each response tuple
         message_components = [html.Div([
-            html.Div(msg[0], className='user-message'), html.Br(),
-            html.Div(msg[1], className='assistant-message')
+            html.Br(),
+            html.Br(), 
+            html.P("You:"),
+            html.Div(msg[0], className='user-message'),
+            html.Br(),
+            html.Br(),
+            html.P("Assistant:"),
+            html.Div(msg[1], className='assistant-message'),
+            html.Br(),
+            html.Br()
         ]) for msg in response]
         
         # return the message components
         return message_components
+    
+    elif button_click == 'reset-button':
+        chatbot(value=None)
+
+        clear_components = [html.Div([
+            html.Br(),
+            html.P("Message cleared!"),
+            html.Br()
+        ])]
+        
+        return clear_components
+    
     else:
         return []
+    
+# try2
+# @app.callback(
+#     Output('output-container', 'children'),
+#     [Input('submit-button', 'n_clicks'),
+#     Input('reset-button', 'n_clicks')],
+#     [State('input-box', 'value'),
+#      State('reset-message', 'children')]
+# )
+# def update_output(submit_clicks, reset_clicks, value, reset_message):
+#     if reset_clicks > 0:
+        
+#         global message_history
+#         message_history = []
+#         return [html.Div(reset_message, className='reset-message')]
+    
+#     elif submit_clicks > 0:
+#         # call the chatbot function to get the response
+#         response = chatbot(value)
+        
+#         # create a list of message components for each response tuple
+#         message_components = [html.Div([
+#             html.Br(),
+#             html.Br(),
+#             html.Div(msg[0], className='user-message'),
+#             html.Br(),
+#             html.Br(),
+#             html.Div(msg[1], className='assistant-message'),
+#             html.Br(),
+#             html.Br()
+#         ]) for msg in response]
+        
+#         # return the message components
+#         return message_components
+#     else:
+#         return []
+    
     
 if __name__ == '__main__':  
     app.run_server()
