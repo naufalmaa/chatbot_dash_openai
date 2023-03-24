@@ -12,11 +12,13 @@ This app needs libraries:
 - dash iconify
 
 Updated:
-- Distinguished between user dialog and assistant dialog
+- Distinguished between user dialog and assistant dialog (Now added bolded user and right aligned for assistant)
 - Added reset button for clearing history
+- Created loading mark for processing messages
 
 Next Improvements:
-- Create loading mark for processing messages
+- Fix the loading mark when it dont appear at the beginning
 - Create proper container for displaying messages
 - Beautify the layout
+- Specify the search interest to be more specific about GnG and Investment
 

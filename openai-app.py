@@ -4,6 +4,7 @@ from dash import Dash
 from dash import html
 from dash import Input, Output, State, ctx
 import dash_mantine_components as dmc
+import time
 from dash_iconify import DashIconify
 
 # Set up OpenAI API credentials
@@ -19,7 +20,7 @@ app.layout = html.Section([
     html.Div(id='input-container',
              children=[ # create text input
                         dmc.Textarea(
-                            label="Hello, what are you asking for?",
+                            label='Say "Hi" first to our assistant!',
                             id='input-box',
                             className='input-text',
                             placeholder='Type your message here...',
@@ -32,7 +33,13 @@ app.layout = html.Section([
                         dmc.Button('Reset', leftIcon = DashIconify(icon="codicon:debug-restart", width=20), variant="filled", id='reset-button', className ='icon-button-2', color='red', n_clicks=0),
                         ]
             ),
-    html.Div(id='output-container', className='output-text')
+    html.Div(className='output-text',
+             children=[
+                        dmc.LoadingOverlay(
+                            html.Div(id="output-container")
+                        )
+                    ]
+             )
 ])
 
 # set history of messages
@@ -94,6 +101,9 @@ def update_output(b1,b2, value):
     
     # input the messages using submit button
     if button_click == 'submit-button':
+        # insert loading indicator
+        time.sleep(2)
+        
         # call the chatbot function to get the response
         response = chatbot(value)
         
@@ -101,12 +111,12 @@ def update_output(b1,b2, value):
         message_components = [html.Div([
             html.Br(),
             html.Br(), 
-            html.P("You:"),
+            html.Div("You:", style={"color": "#112D4E", "font-weight": "bold"}),
             html.Div(msg[0], className='user-message'),
             html.Br(),
             html.Br(),
-            html.P("Assistant:"),
-            html.Div(msg[1], className='assistant-message'),
+            html.Div("Assistant:", style={"color": "#112D4E","font-weight": "bold",  "display":"flex", "justify-content":"right", "align-items": "right"}),
+            html.Div(msg[1], className='assistant-message', style={"display":"flex", "justify-content":"right", "align-items": "right"}),
             html.Br(),
             html.Br()
         ]) for msg in response]
@@ -116,6 +126,8 @@ def update_output(b1,b2, value):
     
     # reset the history messages using reset button
     elif button_click == 'reset-button':
+        # insert loading indicator
+        time.sleep(2)
         
         clear_history()
         
